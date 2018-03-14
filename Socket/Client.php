@@ -3,38 +3,57 @@ namespace Socket;
 
 
 use Kernel\Kernel;
+use Kernel\Runnable;
 
 class Client extends Socket
 {
-    protected $up,$connectionStarted;
+    protected $up,$connectionStarted,$timestamp;
+
 
     public function start() : void
     {
-        // Create socket
-        try {
-            $this->socket = socket_create(AF_INET,SOCK_DGRAM,SOL_UDP);
-            socket_set_nonblock($this->socket);
-        } catch (\Throwable  $e) {
-            return;
-        }
+        print 'Connect first time! -- '.$this->ip.PHP_EOL;
         $this->connect();
     }
     public function run() : void{
         // Connection up?
+        if ($this->up == true) {
+            $this->up = socket_last_error($this->socket) === 0;
+            return;
+        }
+
         $errorcode = socket_last_error();
-        if ($errorcode === 0 ){
+        switch ($errorcode)
+        {
+            case 0:
+                // Successfully connected
+                //Connection up. Create class
+                $this->createInstance();
 
-            //Connection up. Create class
-            $this->createInstance();
-
-            // deregister by kernel
-            Kernel::detach($this);
+                $this->up = true;
+                break;
+            case 115:
+                return; // Connection in progress.
+            default:
+                print 'Errorcode :'.$errorcode.PHP_EOL;
+                print socket_strerror($errorcode).PHP_EOL;
+                break;
+        }
+        // Reconnect?
+        if (time() - $this->timestamp > 60) {
+            print 'Reconnect!'.PHP_EOL;
+            $this->connect();
         }
     }
 
     private function connect() {
+        //print '(re)connect to '.$this->ip.':'.$this->port.PHP_EOL;
         socket_connect($this->socket,gethostbyname($this->ip),$this->port);
-        $this->connectionStarted = true;
+        $this->timestamp = time(); // get the timestamp
+    }
+    private function isStillUp()
+    {
+
     }
 
 }

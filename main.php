@@ -10,7 +10,9 @@ require_once 'Kernel/include.php';
 
 require_once 'Socket/include.php';
 
-require_once 'Daemon/include.php';
+require_once 'VPN/Daemon/include.php';
+
+require_once 'VPN/Transfer/include.php';
 
 require_once 'Configuration/include.php';
 

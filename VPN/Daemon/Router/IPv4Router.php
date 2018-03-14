@@ -17,15 +17,16 @@ class IPv4Router
         $ipDst = $ipPacket->getDstIP();
         $ipSrc = $ipPacket->getSrcIP();
 
-        print $ipSrc->getNormal() .'->'.$ipDst->getNormal().PHP_EOL;
+
 
         try {
-            $route = $this->router->getRoutes()->getRoute($ipDst);
+            $route = $this->router->getRoutes($ipDst);
         } catch (\Exception $e) {
             // no such route
             return;
         }
-        var_dump($route);
+        print $ipSrc->getNormal() .'->'.$ipDst->getNormal().PHP_EOL;
+
 
     }
 }

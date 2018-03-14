@@ -64,7 +64,6 @@ class NetworkDevice implements NetworkInterface,Runnable
         // Is it a broadcast, or a directed straight at us?
         if ($ethernet->getMacDst()->getRaw() === $this->macAddress->getRaw()
             || $ethernet->getMacDst()->getNormal() === 'ff:ff:ff:ff:ff:ff'){
-            print 'DEBUG: Got packet for us. '.$ethernet->getMacDst()->getNormal().PHP_EOL;
 
             // Let the kernel parse this packet
             Kernel::callMethod('parseEthernetPacket',$ethernet);

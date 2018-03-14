@@ -10,13 +10,14 @@ use Socket\Interfaces\Connection;
 
 abstract class Socket implements Runnable
 {
-    protected $ip,$port,$socket,$protocol,$className;
-    public function __construct(string $ip,int $port,string $className,int $protocol)
+    protected $ip,$port,$socket,$protocol,$className,$args;
+    public function __construct(string $ip,int $port,string $className,int $protocol,array $args = [])
     {
         $this->ip = $ip;
         $this->port = $port;
         $this->className = $className;
         $this->protocol = $protocol;
+        $this->args = $args;
         // What kind of type?
         switch ($protocol){
             case SOL_UDP:
@@ -57,7 +58,9 @@ abstract class Socket implements Runnable
             throw new \Exception($this->className.' does not implement '.Connection::class);
         }
 
+        $args = $this->args;
+        array_unshift($args,$socket);
         // create a instance
-        $reflection->newInstance($socket);
+        $reflection->newInstanceArgs($socket);
     }
 }

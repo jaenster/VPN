@@ -34,21 +34,28 @@ class Kernel
                     continue;
                 }
                 $item->obj->start();
+                $item->started = true;
             }
         }
 
         // Loop for ever
         while (!self::breakLoopCheck()) {
 
+            /* debug */
+            $i=0;
+            /* enddebug */
             // Loop trough processes
             foreach (self::$processes as $item) {
+                /* debug */
+                $i++;
+                /* enddebug */
                 if (!$item->obj instanceof Runnable){
                     continue;
                 }
                 // Give a process some time
                 if (!$item->started){
-                    $item->started = true;
                     $item->obj->start();
+                    $item->started = true;
                 }
 
                 $item->obj->run();
@@ -88,9 +95,13 @@ class Kernel
     }
 
     static public function callMethod(string $methodName,$args=[]) : void{
-        foreach (self::$processes as $obj) {
-            if (method_exists($obj,$methodName)) {
-                call_user_func_array(array($obj, $methodName), $args);
+        if (!is_array($args))
+        {
+            $args = [$args];
+        }
+        foreach (self::$processes as $item) {
+            if (method_exists($item->obj,$methodName)) {
+                call_user_func_array(array($item->obj, $methodName), $args);
             }
         }
     }
