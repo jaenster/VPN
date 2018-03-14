@@ -2,12 +2,14 @@
 
 namespace Configuration;
 
+use VPN\Daemon\Router\NetworkDevice;
+
 class conf
 {
     public static $conf,$servers;
     public static function init()
     {
-        foreach (explode("\n", file_get_contents('../.env')) as $line) {
+        foreach (explode("\n", file_get_contents('.env')) as $line) {
             // Remove additional enters;
             $line = str_replace("\r",'',$line);
 
@@ -20,7 +22,7 @@ class conf
             }
 
             $var = explode('=',$line);
-            // error handeling
+            // error handling
             if (!count($var) == 2){
                 continue;
             }
@@ -40,10 +42,12 @@ class conf
 
                     self::parseServerConf($server,$key,$value);
                     break;
+                case self::startsWith('interface',$key):
+                    (new NetworkDevice($value));
+                    break;
                 default:
                     self::$conf[$key] = $value;
             }
-
         }
     }
 

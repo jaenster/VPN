@@ -86,14 +86,13 @@ class Kernel
         }
         throw new \Exception($className.' no such class');
     }
-    /*
-    static public function parseEthernetPacket(Ethernet $packet) : void{
-        $methodName = 'parseEthernetPacket';
+
+    static public function callMethod(string $methodName,$args=[]) : void{
         foreach (self::$processes as $obj) {
             if (method_exists($obj,$methodName)) {
-                $obj->$methodName($packet);
+                call_user_func_array(array($obj, $methodName), $args);
             }
         }
-    }*/
+    }
 
 }
