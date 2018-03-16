@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Kernel;
+namespace VPN\Kernel;
 /**
  * Class statusItem
  * @property $started
  */
-use Collection\Item;
+use VPN\Lib\Collection\Item;
 
 class StatusItem extends Item
 {

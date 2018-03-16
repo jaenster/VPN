@@ -1,6 +1,6 @@
 <?php
 namespace VPN\Transfer\Encryption;
-use Configuration\ServerConfig;
+use VPN\Configuration\ServerConfig;
 
 interface Encryptable
 {

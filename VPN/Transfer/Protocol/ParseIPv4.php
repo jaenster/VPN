@@ -11,7 +11,7 @@ trait ParseIPv4
     {
         $IPv4 = new IPv4($data);
 
-        new
+
 
         print $IPv4->getSrcIP()->getNormal().' -> '.$IPv4->getDstIP()->getNormal().PHP_EOL;
     }

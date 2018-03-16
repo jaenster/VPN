@@ -2,8 +2,10 @@
 
 namespace VPN\Daemon\Router;
 
-use Kernel\Kernel;
-use Kernel\Runnable;
+use VPN\Deamon\Router\Router;
+use VPN\Kernel\Kernel;
+use VPN\Kernel\Runnable;
+
 use Rawsocket\Builder\NetworkInterface;
 use Rawsocket\Layer\Ethernet;
 use Rawsocket\Layer\IPv4;
@@ -11,7 +13,7 @@ use Rawsocket\Model\IPv4Address;
 use Rawsocket\Model\MacAddress;
 use Rawsocket\Model\Packet;
 use Rawsocket\Pcap\SimplePcap;
-use VPN\Deamon\Router\Router;
+
 
 class NetworkDevice implements NetworkInterface,Runnable
 {

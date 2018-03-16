@@ -3,7 +3,7 @@
 namespace VPN\Deamon\Router;
 
 
-use Configuration\Conf;
+use VPN\Configuration\Conf;
 use Rawsocket\Model\Packet;
 use Rawsocket\Model\Protocol\IPv4;
 use VPN\Transfer\Protocol\Protocol;

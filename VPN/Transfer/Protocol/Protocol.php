@@ -3,19 +3,23 @@
 namespace VPN\Transfer\Protocol;
 
 
-use Configuration\ServerConfig;
+use VPN\Configuration\ServerConfig;
+use VPN\Kernel\Kernel;
+use VPN\Kernel\Runnable;
 use VPN\Transfer\Encapsulation\Encapsulation;
 use VPN\Transfer\Encryption\Encryptable;
 
-abstract class Protocol
+abstract class Protocol implements Runnable
 {
     public const TYPE_SYSTEM = 1,TYPE_IPv4 = 2, TYPE_IPv6 = 3;
     private const ENCRYPT=0,DECRYPT = 1;
+    public const SYS_PING=1, SYS_PONG=2,SYS_REQROUTES=3, SYS_ROUTES=4,SYS_PROXY=5;
 
     protected $serverConfig;
     final public function __construct(ServerConfig $serverConfig)
     {
         $this->serverConfig = $serverConfig;
+        Kernel::register($this);
     }
     abstract public function handleRecvPacket(string $rawData) : void;
     abstract public function handleSendPacket(string $rawData,int $type) : void;

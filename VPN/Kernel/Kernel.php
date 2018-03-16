@@ -1,8 +1,8 @@
 <?php
-namespace Kernel;
+namespace VPN\Kernel;
 
 
-use Collection\Collection;
+use VPN\Lib\Collection\Collection;
 
 class Kernel
 {

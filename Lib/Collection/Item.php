@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Collection;
+namespace VPN\Lib\Collection;
 
 /**
  * Class Item

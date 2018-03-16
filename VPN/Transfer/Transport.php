@@ -1,9 +1,9 @@
 <?php
 namespace VPN\Transfer;
 
-use Configuration\ServerConfig;
-use Kernel\Kernel;
-use Kernel\Runnable;
+use VPN\Configuration\ServerConfig;
+use VPN\Kernel\Kernel;
+use VPN\Kernel\Runnable;
 use Rawsocket\Pcap\DumpablePacket;
 use VPN\Transfer\Encapsulation\Encapsulation;
 use VPN\Transfer\Encryption\Encryptable;

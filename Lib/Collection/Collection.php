@@ -1,6 +1,6 @@
 <?php
 
-namespace Collection;
+namespace VPN\Lib\Collection;
 use ReflectionClass;
 
 class Collection extends \SplObjectStorage

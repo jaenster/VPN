@@ -1,6 +1,6 @@
 <?php
 
-namespace Configuration;
+namespace VPN\Configuration;
 
 use Rawsocket\Layer\IPv4;
 use Rawsocket\Model\Route;

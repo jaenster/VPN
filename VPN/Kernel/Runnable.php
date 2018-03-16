@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel;
+namespace VPN\Kernel;
 
 
 interface Runnable
