@@ -24,7 +24,6 @@ class SimpleEncapsulation implements Encapsulation
 
         // Header, size (2 bytes)
         $return = self::generateHeader(strlen($data),$type);
-        print 'Lenght:'.strlen($data).PHP_EOL;
         // add the data
         $return .= $data;
 
@@ -43,7 +42,6 @@ class SimpleEncapsulation implements Encapsulation
 
             $arr = self::parseHeader($str);
             $length = $arr[0];
-            print 'Lenght:'.$length.PHP_EOL;
 
             if (strlen($data)-2 < $length){
                 //$return['incomplete'] = $data;

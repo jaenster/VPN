@@ -16,10 +16,11 @@ class Protocolv0_1 extends Protocol
             switch($packet['type'])
             {
                 case self::TYPE_SYSTEM:
-                    // System msg
+                    $this->parseSystemMsg($packet['data']); // System msg
+                    break;
                 case self::TYPE_IPv4:
-                    $this->parseIPv4($packet['data']);
-                    // IPv4 msg
+                    $this->parseIPv4($packet['data']);      // IPv4 msg
+                    break;
                 case self::TYPE_IPv6:
                     // IPv6 msg <--- for a future far away from here
             }
@@ -28,7 +29,7 @@ class Protocolv0_1 extends Protocol
     }
     public function handleSendPacket(string $rawData,int $type) : void
     {
-        Conf::getTransport()->send($this->packCrypt($rawData,$type),$this->serverConfig);
+        $this->send($rawData,$type);
     }
     protected function parseSystemMsg(string $packet)
     {
@@ -39,36 +40,56 @@ class Protocolv0_1 extends Protocol
             switch ($msg['type'])
             {
                 case self::SYS_PING: // Recved a ping
-                    print 'Recvied a PING with payload: '.$msg['data'];
+
+                    // Reply on PING
+                    $returnPackage .= $this->ping->replyPing($msg['data']);
                     break;
 
                 case self::SYS_PONG:
-                    print 'Recvied a PONG with payload: '.$msg['data'];
+                    $this->ping->gotPong($msg['data']);
                     break;
 
                 case self::SYS_REQROUTES:
                     print 'Recvied a RoutesRequest'.PHP_EOL;
                     break;
+
                 case self::SYS_ROUTES:
                     print 'Recvied routes'.PHP_EOL;
                     break;
+
                 case self::SYS_PROXY: // Future plan
                     print 'TODO: Proxy!'.PHP_EOL;
                     break;
             }
         }
+
+        if ($returnPackage != '')
+        {
+            $this->send($returnPackage,self::TYPE_SYSTEM);
+        }
     }
     public function start() : void
     {
-        // Request the other server's route
-        $header = $this->pack('',self::SYS_REQROUTES);
+        $header = '';
 
-        $header = $this->pack('',self::SYS_ROUTES);
+        // Request the other server's route
+        $header .= $this->pack('',self::SYS_REQROUTES);
+
+        // Send our routes
+        //$header .= $this->pack('',self::SYS_ROUTES);
+
+        // Send the data
+        $this->send($header,self::TYPE_SYSTEM);
+
     }
     public function run(): void
     {
-        // ToDo: send a ping
+        // Send a ping, if needed
+        $this->ping->pingTime();
     }
-
+    private function send($rawData,$type) : void
+    {
+        Conf::getTransport()->send($this->packCrypt($rawData,$type),$this->serverConfig);
+    }
 }
 

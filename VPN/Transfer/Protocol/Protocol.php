@@ -15,10 +15,16 @@ abstract class Protocol implements Runnable
     private const ENCRYPT=0,DECRYPT = 1;
     public const SYS_PING=1, SYS_PONG=2,SYS_REQROUTES=3, SYS_ROUTES=4,SYS_PROXY=5;
 
-    protected $serverConfig;
+    public $serverConfig,$ping,$latancy;
+    public $connectionUp = false;
     final public function __construct(ServerConfig $serverConfig)
     {
+        // set the server config
         $this->serverConfig = $serverConfig;
+
+        // Make ping object
+        $this->ping = new Ping($this);
+
         Kernel::register($this);
     }
     abstract public function handleRecvPacket(string $rawData) : void;
@@ -35,7 +41,7 @@ abstract class Protocol implements Runnable
         return $this->unpack($this->crypt(self::DECRYPT,$rawData));
     }
 
-    protected function pack(string $data, int $type) : string
+    public function pack(string $data, int $type) : string
     {
         return $this->getEncapsulation()->pack($data,$type);
     }

@@ -11,7 +11,7 @@ interface NetworkInterface
 {
     public function getMac() : MacAddress;
     public function getIPv4() : IPv4Address;
-    public function getInterface() : string;
+    public function getDeviceName() : string;
     public function getSimplePcap() : SimplePcap;
 
 }

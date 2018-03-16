@@ -47,7 +47,9 @@ final class Transport implements Runnable
             return; // No such server known, drop packet
         }
 
-        print new DumpablePacket($buf);
+        // for Debug
+        //print new DumpablePacket($buf);
+
         // Let the protocol handle the recved msg
         $serverConfig->protocol->handleRecvPacket($buf);
     }
@@ -60,11 +62,13 @@ final class Transport implements Runnable
     public function send(string $data,ServerConfig $serverConfig)
     {
 
-        print 'Sending data --- '.$serverConfig->ip.' -- '.$serverConfig->port.'.'.PHP_EOL;
         // Pack & Encrypt
         // sending data
         socket_sendto($this->socket, $data , strlen($data) , 0 , $serverConfig->ip , $serverConfig->port);
-        print new DumpablePacket($data);
+
+
+        // For debug
+        //print new DumpablePacket($data);
 
     }
     public function close()

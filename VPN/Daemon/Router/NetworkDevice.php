@@ -17,6 +17,7 @@ use Rawsocket\Pcap\SimplePcap;
 
 class NetworkDevice implements NetworkInterface,Runnable
 {
+    private static $networkInterfaces = [];
     public $macAddress, // MacAddress
         $ip,            // IPAddress
         $device, // The interface where it sends it packets over
@@ -33,16 +34,19 @@ class NetworkDevice implements NetworkInterface,Runnable
 
         // Create a new router;
         $this->router = (new Router($this));
-    }
 
-    public function start() : void
-    {
-        // Start the network interface
+        self::$networkInterfaces[] = $this;
         $this->simplePcap =  new SimplePcap(
             $this->device,
             '',
             4096,
             1);
+    }
+
+    public function start() : void
+    {
+        // Start the network interface
+
     }
 
     public function run() : void
@@ -66,7 +70,7 @@ class NetworkDevice implements NetworkInterface,Runnable
 
             //print 'Debug: '.$ethernet->getMacDst()->getNormal().PHP_EOL;
             // Let the kernel parse this packet
-            Kernel::callMethod('parseEthernetPacket',[$ethernet,$packet]);
+            Kernel::callMethod('parseEthernetPacket',[$ethernet]);
         }
 
     }
@@ -76,7 +80,7 @@ class NetworkDevice implements NetworkInterface,Runnable
     {
         return $this->ip;
     }
-    public function getInterface(): string
+    public function getDeviceName(): string
     {
         return $this->device;
     }
@@ -92,5 +96,18 @@ class NetworkDevice implements NetworkInterface,Runnable
     {
         return $this->router;
     }
-
+    public static function getNetworkInterfaceByDeviceName($name) : self
+    {
+        foreach (self::$networkInterfaces as $ni)
+        {
+            // Error handling
+            if (!$ni instanceof self) {continue;}
+            if ($ni->getDeviceName() == $name)
+            {
+                return $ni;
+            }
+        }
+        //throw new \Exception('No Such Device');
+        return new self($name);
+    }
 }

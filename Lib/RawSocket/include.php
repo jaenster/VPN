@@ -45,6 +45,7 @@ require_once 'Builder/Builder.php';
 require_once 'Builder/EthernetBuilder.php';
 require_once 'Builder/ARPBuilder.php';
 require_once 'Builder/NetworkInterface.php';
+require_once 'Builder/IPv4Builder.php';
 
 require_once 'pcap/load.php';
 require_once 'pcap/SimplePcap.php';

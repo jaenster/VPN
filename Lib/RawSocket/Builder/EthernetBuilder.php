@@ -5,6 +5,7 @@ namespace Rawsocket\Builder;
 
 use Rawsocket\Model\MacAddress;
 use Rawsocket\Model\Protocol\Type\EtherType;
+use Rawsocket\Pcap\DumpablePacket;
 use Rawsocket\Pcap\SimplePcap;
 
 class EthernetBuilder
@@ -37,11 +38,14 @@ class EthernetBuilder
         // Get simple Pcap device
         $simplePcap = $this->network->getSimplePcap();
 
+
+
         // The injection.
         $totalBytesSent = $simplePcap->send($this->payload);
-        print 'Injected '.$totalBytesSent.' in: '.$this->network->getInterface() . PHP_EOL;
 
-        //$this->fancyLayout();
+        print 'Injected ('.$totalBytesSent.' bytes) in: '.$this->network->getDeviceName() . PHP_EOL;
+        print new DumpablePacket($this->payload);
+
         return $this;
     }
     private function getHeader() : string
@@ -57,10 +61,6 @@ class EthernetBuilder
         $this->layerPayload = $payload;
     }
 
-    private function fancyLayout(){
-        foreach (str_split($this->payload) as $key=>$value){
-            print dechex(ord($value)).' ';
-        }
-    }
+
 
 }

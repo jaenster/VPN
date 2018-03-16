@@ -36,7 +36,7 @@ class Router implements Runnable
 
     }
 
-    public function parseEthernetPacket(Ethernet $ethernet,Packet $packet): void
+    public function parseEthernetPacket(Ethernet $ethernet): void
     {
         try {
             $ip = $ethernet->getNextLayer();
@@ -47,7 +47,7 @@ class Router implements Runnable
 
         if ($ip instanceof IPv4){
             // Its a IPv4 packet. We may need to route this
-            $this->IPv4Router->parseIPPacket($ip,$packet);
+            $this->IPv4Router->parseIPPacket($ip);
         }
     }
     public function getRoutes(IPv4Address $ip) : ServerConfig

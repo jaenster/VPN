@@ -30,7 +30,6 @@ class IPv4Router
         try {
             $serverConfig = $this->router->getRoutes($ipDst);
         } catch (\Exception $e) {
-            print 'No such route'.PHP_EOL;
             // no such route
             return;
         }

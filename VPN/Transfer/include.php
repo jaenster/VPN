@@ -9,3 +9,4 @@ require_once 'Transport.php';
 require_once 'Protocol/ParseIPv4.php';
 require_once 'Protocol/Protocol.php';
 require_once 'Protocol/Protocolv0_1.php';
+require_once 'Protocol/Ping.php';

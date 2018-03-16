@@ -46,8 +46,10 @@ class ARPBuilder extends EthernetBuilder
         switch ($this->OPCode) {
             // Send a request [ Who has TargetIP ? Tell srcMac ]
             case !!($this->OPCode & ARPModel::OPCode_request) == ARPModel::OPCode_request:
-                return $this; // ToDo: Send a request
-
+                $payload .= $this->network->getMac()->getRaw();   // Sender Mac, from our (fake) network interface
+                $payload .= $this->network->getIPv4()->getRaw();  // Sender IP,  from our (fake) network interface
+                $payload .= $this->otherMac->getRaw();            // The Mac we care about
+                $payload .= $this->otherIP->getRaw();             // The IP we care about
                 break;
             // Send a reply [ targetIP is at: srcMac ]
             case !!($this->OPCode & ARPModel::OPCode_reply) == ARPModel::OPCode_reply:
