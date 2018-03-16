@@ -3,7 +3,10 @@
 namespace VPN\Deamon\Router;
 
 
+use Configuration\Conf;
+use Rawsocket\Model\Packet;
 use Rawsocket\Model\Protocol\IPv4;
+use VPN\Transfer\Protocol\Protocol;
 
 class IPv4Router
 {
@@ -13,20 +16,26 @@ class IPv4Router
         $this->router = $router;
     }
 
-    public function parseIPPacket(IPv4 $ipPacket){
+    public function parseIPPacket(IPv4 $ipPacket,Packet $packet)
+    {
+        // get Dst ip
         $ipDst = $ipPacket->getDstIP();
-        $ipSrc = $ipPacket->getSrcIP();
 
+        // Ingore packets that are directed to us
+        if ($ipDst->getNormal() == $this->router->networkInterface->ip){
+            return ;
+        }
 
-
+        print $ipDst->getNormal().PHP_EOL;
         try {
-            $route = $this->router->getRoutes($ipDst);
+            $serverConfig = $this->router->getRoutes($ipDst);
         } catch (\Exception $e) {
+            print 'No such route'.PHP_EOL;
             // no such route
             return;
         }
-        print $ipSrc->getNormal() .'->'.$ipDst->getNormal().PHP_EOL;
 
-
+        // send the packet to the server
+        $serverConfig->protocol->handleSendPacket($ipPacket->getRaw(),Protocol::TYPE_IPv4);
     }
 }

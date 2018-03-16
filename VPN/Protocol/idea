@@ -1,6 +1,0 @@
-The Idea behind this is as follows
-Before a socket becomes a Transfer/Socket, it first goes trough here.
-This are the classes that handle the handshake and the encryption setup (for example the public key sharing)
-
-
-Not implemented yet.

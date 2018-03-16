@@ -6,6 +6,7 @@ use Kernel\Kernel;
 use Kernel\Runnable;
 use Rawsocket\Model\IPv4Address;
 use Configuration\ServerConfig;
+use Rawsocket\Model\Packet;
 use VPN\Daemon\Router\NetworkDevice;
 use Rawsocket\Model\Protocol\IPv4;
 use Rawsocket\Model\Protocol\Ethernet;
@@ -13,8 +14,8 @@ use Configuration\Conf;
 
 class Router implements Runnable
 {
-    protected $networkInterface,
-        $IPv4Router,
+    public $networkInterface;
+    protected    $IPv4Router,
         $routes;
 
 
@@ -22,7 +23,6 @@ class Router implements Runnable
     {
         $this->networkInterface = $networkInterface;
         $this->IPv4Router = (new IPv4Router($this));
-        print 'Register -- Router'.PHP_EOL;
         Kernel::register($this);
 
     }
@@ -35,10 +35,10 @@ class Router implements Runnable
 
     }
 
-    public function parseEthernetPacket(Ethernet $packet): void
+    public function parseEthernetPacket(Ethernet $ethernet,Packet $packet): void
     {
         try {
-            $ip = $packet->getNextLayer();
+            $ip = $ethernet->getNextLayer();
         } catch (\Throwable $e){
             // Not a ipv4 packet, since there is no next layer
             return;
@@ -46,16 +46,17 @@ class Router implements Runnable
 
         if ($ip instanceof IPv4){
             // Its a IPv4 packet. We may need to route this
-            $this->IPv4Router->parseIPPacket($ip);
+            $this->IPv4Router->parseIPPacket($ip,$packet);
         }
     }
     public function getRoutes(IPv4Address $ip) : ServerConfig
     {
-        $servers = Conf::getServers();
+        $servers = Conf::getServerConfigs();
         foreach ($servers as $server){
             try{
+
                 // Get server config
-                $server = Conf::getServer($server);
+                $server = ServerConfig::getByName($server);
 
                 // See if there is a route, if not it throws an error
                 $server->routes->getRoute($ip);

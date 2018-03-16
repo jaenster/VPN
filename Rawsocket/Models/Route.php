@@ -13,7 +13,6 @@ class Route
         $this->gateway = $gateway;
         $this->subnet = $subnet;
         $this->interface = $interface;
-
     }
 
     public function __toString()

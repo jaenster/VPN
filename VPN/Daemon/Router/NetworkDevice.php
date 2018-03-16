@@ -35,17 +35,12 @@ class NetworkDevice implements NetworkInterface,Runnable
 
     public function start() : void
     {
-
         // Start the network interface
         $this->simplePcap =  new SimplePcap(
             $this->device,
             '',
             4096,
             1);
-
-
-
-
     }
 
     public function run() : void
@@ -53,20 +48,23 @@ class NetworkDevice implements NetworkInterface,Runnable
         // PHPStorm check.
         if (!$this->simplePcap instanceof SimplePcap ) { return; }
         if (!$this->macAddress instanceof MacAddress){ return ; }
-        // Get a packet
+
+        // the simplePcap magic
         $pcapPacket = $this->simplePcap->get();
         if ($pcapPacket === NULL){
-            return;
+            return; // No packet's
         }
-        $ethernet = (new Packet($pcapPacket))->getEthernet();
 
+        $packet = new Packet($pcapPacket);
+        $ethernet = $packet->getEthernet();
 
         // Is it a broadcast, or a directed straight at us?
-        if ($ethernet->getMacDst()->getRaw() === $this->macAddress->getRaw()
-            || $ethernet->getMacDst()->getNormal() === 'ff:ff:ff:ff:ff:ff'){
+        if ($ethernet->getMacDst()->getRaw() === $this->macAddress->getRaw()){
+            //|| $ethernet->getMacDst()->getNormal() === 'ff:ff:ff:ff:ff:ff'){
 
+            //print 'Debug: '.$ethernet->getMacDst()->getNormal().PHP_EOL;
             // Let the kernel parse this packet
-            Kernel::callMethod('parseEthernetPacket',$ethernet);
+            Kernel::callMethod('parseEthernetPacket',[$ethernet,$packet]);
         }
 
     }

@@ -9,7 +9,7 @@ use Rawsocket\Layer\IPv4 as IPv4Layer;
 use Rawsocket\Model\Route;
 class Routes
 {
-    private $routes;
+    private $routes = [];
 
     // Function that adds the default system routes
     public function addSystemRoutes() : self{
@@ -43,6 +43,10 @@ class Routes
 
         }
         return $this;
+    }
+    public function getRoutes() : array
+    {
+        return $this->routes;
     }
 
     // Add a route

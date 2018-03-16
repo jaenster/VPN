@@ -2,16 +2,16 @@
 
 namespace Configuration;
 
+use Rawsocket\Layer\IPv4;
 use VPN\Daemon\Router\NetworkDevice;
-use VPN\Transfer\Encapsulation\Simple;
-use VPN\Transfer\Encryption\NoEncryption;
+use VPN\Transfer\Transport;
 
 class Conf
 {
-    private static $conf,$servers;
-    public static function init()
+    public static $conf,$serverConfigs,$transport;
+    public static function init(string $configfile)
     {
-        foreach (explode("\n", file_get_contents('.env')) as $line) {
+        foreach (explode("\n", file_get_contents($configfile)) as $line) {
             // Remove additional enters;
             $line = str_replace("\r",'',$line);
 
@@ -46,27 +46,17 @@ class Conf
                     break;
                 case self::startsWith('interface',$key):
                     (new NetworkDevice($value));
+                    self::$conf[strtolower($key)] = $value;
                     break;
                 default:
                     self::$conf[strtolower($key)] = $value;
             }
         }
 
-        // Config loaded.
-        // Encryption
-        switch (!isset(self::$conf['encryption']) || strtolower(self::$conf['encryption']))
+        foreach (self::$serverConfigs as $serverConfig)
         {
-            case 'noencryption':
-            default:
-                self::$conf['encryption'] = new NoEncryption();
-        }
-
-        // Encapsulation
-        switch (!isset(self::$conf['encapsulation']) || strtolower(self::$conf['encapsulation']))
-        {
-            case 'simple':
-            default:
-                self::$conf['encapsulation'] = new Simple();
+            if (!$serverConfig instanceof ServerConfig) { continue; }
+            $serverConfig->done();
         }
     }
 
@@ -76,22 +66,14 @@ class Conf
         }
         return self::$conf[strtolower($name)];
     }
-
-    public static function getServer(string $name) : ServerConfig
-    {
-        if (!isset(self::$servers[$name])){
-            throw new \Exception('no such server');
-        }
-        return self::$servers[$name];
-    }
     private static function startsWith(string $needle,string $haystack) : bool
     {
         return strtolower(substr( $haystack,0, strlen($needle) )) === $needle;
     }
     private static function parseServerConf(string $server,string $key, string $value)
     {
-        if (isset(self::$servers[$server])) {
-            $obj = self::$servers[$server];
+        if (isset(self::$serverConfigs[$server])) {
+            $obj = self::$serverConfigs[$server];
         } else {
             $obj = new ServerConfig();
         }
@@ -105,18 +87,23 @@ class Conf
             case self::startsWith('encapsulation',$key):
                 $obj->setEncapsulation($value);
                 break;
+            case self::startsWith('encryption',$key):
+                $obj->setEncryption($value);
+                break;
             default:
                 $obj->$key = $value;
                 break;
         }
-        self::$servers[$server] = $obj;
+        self::$serverConfigs[$server] = $obj;
     }
-    public static function getServers() : array
+    public static function getServerConfigs() : array
     {
-        return array_keys(self::$servers);
+        return array_keys(self::$serverConfigs);
+    }
+    public static function getTransport() : Transport
+    {
+        return self::$transport;
     }
 }
 
 
-// Load the config
-Conf::init();

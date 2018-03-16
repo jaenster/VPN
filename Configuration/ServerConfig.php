@@ -2,27 +2,26 @@
 
 namespace Configuration;
 
-use Kernel\Kernel;
-use Kernel\Runnable;
 use Rawsocket\Layer\IPv4;
 use Rawsocket\Model\Route;
 use Rawsocket\Route\Routes;
-use Socket\Client;
-use VPN\Transfer\Encapsulation\Simple;
+use VPN\Transfer\Encapsulation\SimpleEncapsulation;
 use VPN\Transfer\Encryption\NoEncryption;
+use VPN\Transfer\Protocol\Protocolv0_1;
 
-class ServerConfig implements Runnable
+class ServerConfig
 {
-    public $routes,$name,$port,$hostname,$pass,$client,$encapsulation,$encryption,$socket;
+    public $routes, $name, $port, $hostname,$ip, $pass, $client, $encapsulation, $encryption, $socket,$server,$protocol;
 
     public function __construct()
     {
         $this->routes = new Routes();
         $this->encapsulation = null;
-        Kernel::register($this);
+        $this->encryption = null;
+        $this->protocol = new Protocolv0_1($this);
     }
 
-    public function addRoute(string $route) : void
+    public function addRoute(string $route): void
     {
         // get the network (without the /)
         $network = substr($route, 0, strpos($route, '/'));
@@ -33,58 +32,69 @@ class ServerConfig implements Runnable
         // Add the route
         $this->routes->addRoute(new Route($network, '', $subnet));
     }
-    public function setEncapsulation(string $name) : void
+
+    public function setEncapsulation(string $name): void
     {
-        switch (strtolower($name))
-        {
+        switch (strtolower($name)) {
             case 'simple':
             default:
-                $this->encapsulation = new Simple();
+                $this->encapsulation = new SimpleEncapsulation();
                 break;
         }
     }
-    public function setEncryption(string $name) : void
+
+    public function setEncryption(string $name): void
     {
-        switch (strtolower($name))
-        {
+        switch (strtolower($name)) {
             case 'noencryption':
             default:
-                $this->encryption = new NoEncryption();
+                $this->encryption = new NoEncryption($this);
                 break;
         }
     }
-    public function start() : void
+
+
+    // Called by config
+    public function done(): void
     {
         // If no Encapsulation chosen, choose the default
-        if ($this->encapsulation === null)
-        {
+        if ($this->encapsulation === null) {
+            print 'here -- encapsulation '.PHP_EOL;
             $this->setEncapsulation('');
         }
 
         // If no encryption chosen, choose the default
-        if ($this->encryption === null)
-        {
+        if ($this->encryption === null) {
+            print 'here -- encryption '.PHP_EOL;
             $this->setEncryption('');
         }
 
-        if (!$this->name === null) {
-            new Client($this->hostname,$this->port,\VPN\Transfer\Client::class,SOL_TCP);
-        }
-
+        $this->ip = gethostbyname($this->hostname);
         // Only needed a to start with the kernel,
-        Kernel::detach($this);
 
     }
-    public function run() : void
-    {
 
-    }
-    public function setClient(\VPN\Transfer\Client $client) : void
+
+    public static function getByName(string $name): ServerConfig
     {
-        $this->client = $client;
+        $servers = Conf::$serverConfigs;
+        if (!isset($servers[$name])) {
+            throw new \Exception('no such server');
+        }
+        return $servers[$name];
     }
-    public function getClient() : \VPN\Transfer\Client
+
+    public static function getByIP($ip): ServerConfig
     {
-        return $this->client;
+        $servers = Conf::$serverConfigs;
+        foreach ($servers as $server){
+            if (!$server instanceof ServerConfig) { continue; }
+            // The ip we are looking for?
+            if ($ip == gethostbyname($server->hostname)) {
+
+                return $server;
+            }
+        }
+        throw new \Exception('no such server');
     }
 }

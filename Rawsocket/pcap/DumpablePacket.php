@@ -5,21 +5,19 @@ namespace Rawsocket\Pcap;
 
 class DumpablePacket
 {
-    private $packet;
+    private $data;
     const BYTES_PER_COLUMN = 8;
     const COLUMNS_PER_ROW = 2;
     const BYTES_PER_ROW = 16;
 
     public function __toString()
     {
-        $ret = $this->packet->__toString();
-        $ret .= "\n";
-        $ret .= $this->dumpPacketData($this->packet->getData());
-        return $ret;
+        return $this->dumpPacketData();
     }
 
-    private function dumpPacketData($data)
+    private function dumpPacketData()
     {
+        $data = $this->data;
         $ret = '';
         $total = strlen($data);
         $totalRows = ceil($total / self::BYTES_PER_ROW);
@@ -77,8 +75,8 @@ class DumpablePacket
         return $ret;
     }
 
-    public function __construct(Packet $packet)
+    public function __construct(string $data)
     {
-        $this->packet = $packet;
+        $this->data = $data;
     }
 }

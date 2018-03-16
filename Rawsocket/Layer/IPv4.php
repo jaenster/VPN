@@ -59,7 +59,7 @@ class IPv4
         ];
     }
 
-    static function mask2cidr($mask){
+    static function mask2cidr($mask) : int{
         $long = ip2long($mask);
         $base = ip2long('255.255.255.255');
         return 32-log(($long ^ $base)+1,2);

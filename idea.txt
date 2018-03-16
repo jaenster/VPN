@@ -1,0 +1,15 @@
+hernoem .env
+
+
+
+
+
+UDP, anders no way
+
+
+Ipv4 - tunnelen
+	En zo ver mogelijk uit elkaar trekken.
+
+
+PSK - Pre shared key
+	Het is "stuk" op het moment dat t ip niet in de range valt waar het onder zou moeten 	vallen het netwerk

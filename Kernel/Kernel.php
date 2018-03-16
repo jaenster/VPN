@@ -38,26 +38,31 @@ class Kernel
             }
         }
 
-        // Loop for ever
+        // Loop forever
         while (!self::breakLoopCheck()) {
 
-            /* debug */
-            $i=0;
-            /* enddebug */
             // Loop trough processes
             foreach (self::$processes as $item) {
-                /* debug */
-                $i++;
-                /* enddebug */
+
+                // error handling
                 if (!$item->obj instanceof Runnable){
                     continue;
                 }
-                // Give a process some time
+
+                // Called start() on class?
                 if (!$item->started){
                     $item->obj->start();
                     $item->started = true;
                 }
 
+                // In the time we are looping, it can be detached already, lets check
+                if (!(self::$processes instanceof Collection
+                    && self::$processes->contains($item)))
+                {
+                    continue; // Not attached anymore, so we are not gonna call run()
+                }
+
+                // Give a process some time
                 $item->obj->run();
             }
 

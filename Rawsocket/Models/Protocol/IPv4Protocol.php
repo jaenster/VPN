@@ -17,12 +17,12 @@ class IPv4 extends Protocol implements Layer3
 
 
     protected $VersionHeader, $DSF, $totalLength, $identification, $flagsFragment, $TTL, $protocol, $headerChecksum,
-    $srcIP, $dstIP, $layer4;
+    $srcIP, $dstIP, $layer4,$raw;
 
     public function __construct($data)
     {
+        $this->raw = $data;
         $payload = parent::__construct($data);
-
 
         // Get layer4
         try
@@ -41,18 +41,18 @@ class IPv4 extends Protocol implements Layer3
     {
         return  [
             'VersionHeader'     =>  ['bytes'=>1],
-            'DSF'               => ['bytes'=>1],
-            'totalLength'       => ['bytes'=>2],
-            'identification'    =>['bytes'=>2],
-            'flagsFragment'     =>['bytes'=>2],
-            'TTL'               =>['bytes'=>1],
-            'protocol'          =>['bytes'=>1,
-                                    'to'=>ProtocolType::class],
-            'headerChecksum'    =>['bytes'=>2],
-            'srcIP'          =>['bytes'=>4,
-                                    'to'=>IPv4Address::class],
-            'dstIP'            =>['bytes'=>4,
-                                    'to'=>IPv4Address::class],
+            'DSF'               =>  ['bytes'=>1],
+            'totalLength'       =>  ['bytes'=>2],
+            'identification'    =>  ['bytes'=>2],
+            'flagsFragment'     =>  ['bytes'=>2],
+            'TTL'               =>  ['bytes'=>1],
+            'protocol'          =>  ['bytes'=>1,
+                                        'to'=>ProtocolType::class],
+            'headerChecksum'    =>  ['bytes'=>2],
+            'srcIP'             =>  ['bytes'=>4,
+                                        'to'=>IPv4Address::class],
+            'dstIP'             =>  ['bytes'=>4,
+                                        'to'=>IPv4Address::class],
         ];
     }
 
@@ -68,4 +68,21 @@ class IPv4 extends Protocol implements Layer3
     {
         return $this->srcIP;
     }
+    public function getRaw() : string
+    {
+        return $this->raw;
+    }
+    public function getTTL() : string
+    {
+        return $this->TTL;
+    }
+    public function getProtocol() : string
+    {
+        return $this->protocol;
+    }
+    public function getDSF() : string
+    {
+
+    }
+
 }
