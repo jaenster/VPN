@@ -16,7 +16,7 @@ class IPv4Router
         $this->router = $router;
     }
 
-    public function parseIPPacket(IPv4 $ipPacket,Packet $packet)
+    public function parseIPPacket(IPv4 $ipPacket)
     {
         // get Dst ip
         $ipDst = $ipPacket->getDstIP();
