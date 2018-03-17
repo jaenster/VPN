@@ -26,14 +26,12 @@ class IPv4Router
             || $ipPacket->getSrcIP()->getNormal() == $this->router->networkInterface->ip) {
             return ;
         }
-        print $ipDst->getNormal().PHP_EOL;
         try {
             $serverConfig = $this->router->getRoutes($ipDst);
         } catch (\Exception $e) {
             // no such route
             return;
         }
-        print new DumpablePacket($ipPacket->getRaw(),$this->router->networkInterface->getDeviceName());
 
         // send the packet to the server
         $serverConfig->protocol->send(BaseProtocol::TYPE_IPv4,$ipPacket->getRaw());

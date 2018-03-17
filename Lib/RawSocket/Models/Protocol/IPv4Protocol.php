@@ -31,7 +31,7 @@ class IPv4 extends IP implements Layer3
         }
         catch (NotALayerInterface | NotARegisteredLayer $e )
         {
-            //print 'Caught a unsupported IPv4 protocol: '. $this->protocol . PHP_EOL;
+            // Not a supported layer
         }
 
 

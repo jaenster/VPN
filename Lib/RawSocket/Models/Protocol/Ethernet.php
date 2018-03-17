@@ -32,7 +32,7 @@ class Ethernet extends Protocol implements Layer2
         try {
             $this->layer3 = Factory::getLayer3($this->etherType, $payload);
         } catch (NotALayerInterface | NotARegisteredLayer $e) {
-           //print 'Not a known EtherType '.$this->etherType.PHP_EOL;
+            return ; // No next layer
         }
     }
 

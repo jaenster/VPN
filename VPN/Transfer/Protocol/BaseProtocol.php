@@ -59,12 +59,10 @@ abstract class BaseProtocol implements Runnable
             switch($packet['type'])
             {
                 case self::TYPE_SYSTEM:
-                    print new DumpablePacket($packet['data']);
                     $this->parseSystemMsg($this->unpack($packet['data'])); // System msg
                     break;
 
                 case self::TYPE_IPv4:
-                    print 'PARSE -- ipv4'.PHP_EOL;
                     $this->parseIPv4($packet['data']);      // IPv4 msg
                     break;
 
@@ -82,12 +80,10 @@ abstract class BaseProtocol implements Runnable
         $returnPackage = '';
         foreach($msgs as $msg)
         {
-            print $msg['type'].PHP_EOL;
             switch ($msg['type'])
             {
                 case self::SYS_PING: // Recved a ping
                     // Reply on PING
-                    print 'PONG DATA: --'.$msg['data'].PHP_EOL;
                     $returnPackage .=  $this->pack(self::SYS_PONG,$msg['data']);
                     break;
 
@@ -111,7 +107,6 @@ abstract class BaseProtocol implements Runnable
                     break;
 
                 case self::SYS_NEW_INSTANCE:
-                    print 'NEW INSTANCE'.PHP_EOL;
                     $returnPackage .= $this->pack(self::SYS_ROUTES,$this->getRouteHeader());
 
                     break;

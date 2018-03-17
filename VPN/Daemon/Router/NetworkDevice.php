@@ -114,7 +114,6 @@ class NetworkDevice implements NetworkInterface,Runnable
     }
     public static function getNetworkInterfaceByDeviceName($name) : self
     {
-        print 'Network interface name '.$name.PHP_EOL;
         foreach (self::$networkInterfaces as $ni)
         {
             // Error handling

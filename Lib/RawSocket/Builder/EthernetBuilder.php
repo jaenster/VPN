@@ -41,9 +41,6 @@ class EthernetBuilder
         // The injection.
         $totalBytesSent = $simplePcap->send($this->payload);
 
-        print 'Injected ('.$totalBytesSent.' bytes) in: '.$this->network->getDeviceName() . PHP_EOL;
-        print new DumpablePacket($this->payload);
-
         return $this;
     }
     private function getHeader() : string

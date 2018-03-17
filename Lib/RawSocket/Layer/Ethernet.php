@@ -38,7 +38,6 @@ class Ethernet
         foreach (self::$arptable as $item){
             if ($item['ip'] == $ip->getNormal())
             {
-                //print 'Got out of arp table'.PHP_EOL;
                 return $item['mac'];
             }
         }

@@ -40,7 +40,6 @@ class Protocol extends BaseProtocol
         $IPv4 = new IPv4($data);
         $ipDst = $IPv4->getDstIP();
 
-        print $IPv4->getSrcIP()->getNormal().' -> '.$ipDst->getNormal().PHP_EOL;
 
 
         // Get mac and device of gateway
@@ -52,9 +51,6 @@ class Protocol extends BaseProtocol
             return;
         }
 
-        print 'Gateway\'s mac: '.$macAddress->getNormal().PHP_EOL;
-        print 'Gateway\'s ip: '.Conf::getGateway()->getNormal().PHP_EOL;
-        print 'Gateway reachable via: '.$device.PHP_EOL;
 
         $builder = new IPv4Builder(NetworkDevice::getNetworkInterfaceByDeviceName($device),$macAddress,$data);
         $builder->build();
@@ -72,15 +68,12 @@ class Protocol extends BaseProtocol
             {
                 case self::ROUTE_RESET:
                     $this->serverConfig->routes->resetRoutes();
-                    print 'Clearing Routes: '.$data.PHP_EOL;
                     break;
 
                 case self::ROUTE_DATA:
-                    print 'Adding route: '.$data.PHP_EOL;
                     $this->serverConfig->addRoute($data);
                     break;
                 case self::ROUTE_REQUEST:
-                    print 'Requested routes';
                     $return .= $this->getRouteHeader();
                     break;
             }
