@@ -21,7 +21,6 @@ class IPv4Router
     {
         // get Dst ip
         $ipDst = $ipPacket->getDstIP();
-
         // Ingore packets that are directed to us
         if ($ipDst->getNormal() == $this->router->networkInterface->ip){
             return ;
@@ -32,7 +31,8 @@ class IPv4Router
             // no such route
             return;
         }
-        //print new DumpablePacket($ipPacket->getRaw());
+        print new DumpablePacket($ipPacket->getRaw(),$this->router->networkInterface->getDeviceName());
+
         // send the packet to the server
         $serverConfig->protocol->send(BaseProtocol::TYPE_IPv4,$ipPacket->getRaw());
     }
