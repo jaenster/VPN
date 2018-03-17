@@ -63,7 +63,7 @@ final class Transport implements Runnable
 
     public function send(string $data,ServerConfig $serverConfig) : void
     {
-        socket_sendto($this->socket, $data , strlen($data) , 0 , $serverConfig->ip , $serverConfig->port);
+        socket_sendto($this->socket, $data , strlen($data) , 0 , $serverConfig->ip , (int) $serverConfig->port);
         // For debug
         print 'Send to '.$serverConfig->ip.':'.$serverConfig->port.PHP_EOL;
         print new DumpablePacket($data,'---->');

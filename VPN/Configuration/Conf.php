@@ -3,6 +3,7 @@
 namespace VPN\Configuration;
 
 use Rawsocket\Layer\IPv4;
+use Rawsocket\Model\IPv4Address;
 use VPN\Daemon\Router\NetworkDevice;
 use VPN\Transfer\Transport;
 
@@ -44,10 +45,16 @@ class Conf
 
                     self::parseServerConf($server,$key,$value);
                     break;
+
                 case self::startsWith('interface',$key):
                     (new NetworkDevice($value));
                     self::$conf[strtolower($key)] = $value;
                     break;
+
+                case self::startsWith('gateway',$key):
+                    self::$conf[strtolower($key)] = (new IPv4Address())->setIpFromString($value);
+                    break;
+
                 default:
                     self::$conf[strtolower($key)] = $value;
             }
@@ -84,12 +91,15 @@ class Conf
             case self::startsWith('route.',$key):
                 $obj->addRoute($value); // The x.x.x.x/mask
                 break;
+
             case self::startsWith('encapsulation',$key):
                 $obj->setEncapsulation($value);
                 break;
+
             case self::startsWith('encryption',$key):
                 $obj->setEncryption($value);
                 break;
+
             default:
                 $obj->$key = $value;
                 break;
@@ -103,6 +113,10 @@ class Conf
     public static function getTransport() : Transport
     {
         return self::$transport;
+    }
+    public static function getGateway() : IPv4Address
+    {
+        return self::$conf['gateway'];
     }
 }
 

@@ -13,7 +13,7 @@ use VPN\Transfer\Protocol\Protocol;
 
 class ServerConfig
 {
-    public $routes, $name, $port, $hostname,$ip, $pass, $client, $encapsulation, $encryption, $socket,$server,$protocol;
+    public $routes, $name, $port, $hostname,$gateway,$ip, $pass, $client, $encapsulation, $encryption, $socket,$server,$protocol;
 
     public function __construct()
     {

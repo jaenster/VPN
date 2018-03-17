@@ -69,6 +69,7 @@ class Ethernet
     }
     static function getDevOfIP(IPv4Address $ip)
     {
+        var_dump(self::$arptable);
         // We have it saved in our ARP Table?
         foreach (self::$arptable as $item){
             if ($item['ip'] == $ip->getNormal())

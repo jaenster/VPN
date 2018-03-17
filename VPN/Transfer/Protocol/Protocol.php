@@ -4,6 +4,7 @@ namespace VPN\Transfer\Protocol;
 
 use Rawsocket\Builder\IPv4Builder;
 use Rawsocket\Exceptions\InvalidMacAddress;
+use Rawsocket\Model\IPv4Address;
 use Rawsocket\Model\Protocol\IPv4;
 use Rawsocket\Layer\Ethernet;
 use Rawsocket\Pcap\DumpablePacket;
@@ -41,14 +42,19 @@ class Protocol extends BaseProtocol
 
         print $IPv4->getSrcIP()->getNormal().' -> '.$ipDst->getNormal().PHP_EOL;
 
+
+        // Get mac and device of gateway
         try {
-            $macAddress =  Ethernet::getMacOfIP($ipDst);
-            $device = Ethernet::getDevOfIP($ipDst);
+            $macAddress =  Ethernet::getMacOfIP(Conf::getGateway());
+            $device = Ethernet::getDevOfIP(Conf::getGateway());
         } catch (InvalidMacAddress $mac) {
             // No mac address found, we cant route it
             return;
         }
 
+        print 'Gateway\'s mac: '.$macAddress->getNormal().PHP_EOL;
+        print 'Gateway\'s ip: '.Conf::getGateway()->getNormal().PHP_EOL;
+        print 'Gateway reachable via: '.$device.PHP_EOL;
 
         $builder = new IPv4Builder(NetworkDevice::getNetworkInterfaceByDeviceName($device),$macAddress,$data);
         $builder->build();
