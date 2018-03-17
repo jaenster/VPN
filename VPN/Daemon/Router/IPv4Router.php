@@ -22,9 +22,11 @@ class IPv4Router
         // get Dst ip
         $ipDst = $ipPacket->getDstIP();
         // Ingore packets that are directed to us
-        if ($ipDst->getNormal() == $this->router->networkInterface->ip){
+        if ($ipDst->getNormal() == $this->router->networkInterface->ip
+            || $ipPacket->getSrcIP()->getNormal() == $this->router->networkInterface->ip) {
             return ;
         }
+        print $ipDst->getNormal().PHP_EOL;
         try {
             $serverConfig = $this->router->getRoutes($ipDst);
         } catch (\Exception $e) {
