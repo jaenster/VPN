@@ -37,7 +37,7 @@ class EthernetBuilder
 
         // Get simple Pcap device
         $simplePcap = $this->network->getSimplePcap();
-        
+
         // The injection.
         $totalBytesSent = $simplePcap->send($this->payload);
 
