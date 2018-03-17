@@ -86,7 +86,6 @@ class NetworkDevice implements NetworkInterface,Runnable
             //|| $ethernet->getMacDst()->getNormal() === 'ff:ff:ff:ff:ff:ff'){
 
             // Let the kernel parse this packet
-            print new DumpablePacket($packet->getRaw(),$this->getDeviceName());
             Kernel::callMethod('parseEthernetPacket',[$ethernet]);
         }
 
