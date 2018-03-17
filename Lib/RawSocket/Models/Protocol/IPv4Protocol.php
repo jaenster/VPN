@@ -12,7 +12,7 @@ use Rawsocket\Layer\Layer4;
 use Rawsocket\Model\IPv4Address;
 use Rawsocket\Model\Protocol\Type\ProtocolType;
 
-class IPv4 extends Protocol implements Layer3
+class IPv4 extends IP implements Layer3
 {
 
 

@@ -28,6 +28,7 @@ require_once 'Models/Packet.php';
 require_once 'Models/Protocol/Protocol.php';
 require_once 'Models/Protocol/Ethernet.php';
 require_once 'Models/Protocol/ARP.php';
+require_once 'Models/Protocol/IP.php';
 require_once 'Models/Protocol/IPv4Protocol.php';
 require_once 'Models/Protocol/Type/BinaryInt.php';
 require_once 'Models/Protocol/Type/EtherType.php';

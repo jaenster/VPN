@@ -64,7 +64,7 @@ class NetworkDevice implements NetworkInterface,Runnable
 
         $packet = new Packet($pcapPacket);
         $ethernet = $packet->getEthernet();
-
+        if ($ethernet->getNextLayer() instanceof IP
 
         // Is it a broadcast, or a directed straight at us?
         if ($ethernet->getMacDst()->getRaw() === $this->macAddress->getRaw()){
