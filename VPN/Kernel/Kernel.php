@@ -67,7 +67,7 @@ class Kernel
             }
 
             // sleep for a microsecond avoid full cpu usage
-            usleep(1);
+            //usleep(1);
         }
     }
 
