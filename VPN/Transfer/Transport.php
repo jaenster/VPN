@@ -36,9 +36,12 @@ final class Transport implements Runnable
     {
         //Receive some data
         $r = socket_recvfrom($this->socket, $buf, 6144, 0, $remote_ip, $remote_port);
+
         if (!$r) {
             return; // No data
         }
+        print 'Recved from '.$remote_ip.':'.$remote_port.PHP_EOL;
+        print new DumpablePacket($buf,'<----');
         try {
             $serverConfig = ServerConfig::getByIP($remote_ip);
         } catch (\Exception $e) {
@@ -47,8 +50,7 @@ final class Transport implements Runnable
 
 
         // for Debug
-        //print 'Recved from '.$remote_ip.':'.$remote_port.PHP_EOL;
-        //print new DumpablePacket($buf,'<----');
+
 
         // Let the protocol handle the recved msg
         $serverConfig->protocol->recv($buf);
@@ -64,8 +66,8 @@ final class Transport implements Runnable
         socket_sendto($this->socket, $data , strlen($data) , 0 , $serverConfig->ip , $serverConfig->port);
 
         // For debug
-        //print 'Send to '.$serverConfig->ip.':'.$serverConfig->port.PHP_EOL;
-        //print new DumpablePacket($data,'---->');
+        print 'Send to '.$serverConfig->ip.':'.$serverConfig->port.PHP_EOL;
+        print new DumpablePacket($data,'---->');
 
     }
     public function close() : void
