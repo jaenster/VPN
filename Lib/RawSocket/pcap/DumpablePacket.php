@@ -22,7 +22,7 @@ class DumpablePacket
         $total = strlen($data);
         $totalRows = ceil($total / self::BYTES_PER_ROW);
         for ($row = 0, $offset = 0; $row < $totalRows; $row++) {
-            $ret .= str_pad($row * self::BYTES_PER_ROW, 5, "0", STR_PAD_LEFT);
+            $ret .= $this->startwith.str_pad($row * self::BYTES_PER_ROW, 5, "0", STR_PAD_LEFT);
             $subdata = substr($data, $offset, self::BYTES_PER_ROW);
             $ret .= $this->dumpHex($subdata);
             $ret .= $this->dumpAscii($subdata);
@@ -75,8 +75,13 @@ class DumpablePacket
         return $ret;
     }
 
-    public function __construct(string $data)
+    public function __construct(string $data,$startwith='')
     {
         $this->data = $data;
+        if ($startwith != '')
+        {
+            $startwith .= ' ';
+        }
+        $this->startwith = $startwith;
     }
 }

@@ -12,7 +12,7 @@ namespace VPN\Transfer\Encapsulation;
 class SimpleEncapsulation implements Encapsulation
 {
 
-    public function pack(string $data,int $type) : string
+    public function pack(int $type,string $data) : string
     {
         // Error handling. If bigger then 65536 it doesn't fit in 2 bytes
         if (strlen($data) > 4095) {

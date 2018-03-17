@@ -5,9 +5,11 @@ namespace VPN\Configuration;
 use Rawsocket\Layer\IPv4;
 use Rawsocket\Model\Route;
 use Rawsocket\Route\Routes;
+use VPN\Transfer\Encapsulation\Encapsulation;
 use VPN\Transfer\Encapsulation\SimpleEncapsulation;
+use VPN\Transfer\Encryption\Encryptable;
 use VPN\Transfer\Encryption\NoEncryption;
-use VPN\Transfer\Protocol\Protocolv0_1;
+use VPN\Transfer\Protocol\Protocol;
 
 class ServerConfig
 {
@@ -18,7 +20,7 @@ class ServerConfig
         $this->routes = new Routes();
         $this->encapsulation = null;
         $this->encryption = null;
-        $this->protocol = new Protocolv0_1($this);
+        $this->protocol = new Protocol($this);
     }
 
     public function addRoute(string $route): void
@@ -53,19 +55,26 @@ class ServerConfig
         }
     }
 
+    public function getEncapsulation() : Encapsulation
+    {
+        return $this->encapsulation;
+    }
+
+    public function getEncryption() : Encryptable
+    {
+        return $this->encryption;
+    }
 
     // Called by config
     public function done(): void
     {
         // If no Encapsulation chosen, choose the default
         if ($this->encapsulation === null) {
-            print 'here -- encapsulation '.PHP_EOL;
             $this->setEncapsulation('');
         }
 
         // If no encryption chosen, choose the default
         if ($this->encryption === null) {
-            print 'here -- encryption '.PHP_EOL;
             $this->setEncryption('');
         }
 

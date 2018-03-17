@@ -71,7 +71,10 @@ class Routes
             }
         }
         throw new NoSuchRoute($ip->getNormal());
-
+    }
+    public function resetRoutes() : void
+    {
+        $this->routes = [];
     }
 
 

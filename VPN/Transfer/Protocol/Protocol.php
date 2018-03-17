@@ -2,74 +2,95 @@
 
 namespace VPN\Transfer\Protocol;
 
+use Rawsocket\Builder\IPv4Builder;
+use Rawsocket\Exceptions\InvalidMacAddress;
+use Rawsocket\Model\Protocol\IPv4;
+use Rawsocket\Layer\Ethernet;
+use Rawsocket\Pcap\DumpablePacket;
+use VPN\Configuration\Conf;
+use VPN\Daemon\Router\NetworkDevice;
 
-use VPN\Configuration\ServerConfig;
-use VPN\Kernel\Kernel;
-use VPN\Kernel\Runnable;
-use VPN\Transfer\Encapsulation\Encapsulation;
-use VPN\Transfer\Encryption\Encryptable;
 
-abstract class Protocol implements Runnable
+
+class Protocol extends BaseProtocol
 {
-    public const TYPE_SYSTEM = 1,TYPE_IPv4 = 2, TYPE_IPv6 = 3;
-    private const ENCRYPT=0,DECRYPT = 1;
-    public const SYS_PING=1, SYS_PONG=2,SYS_REQROUTES=3, SYS_ROUTES=4,SYS_PROXY=5;
 
-    public $serverConfig,$ping,$latancy;
-    public $connectionUp = false;
-    final public function __construct(ServerConfig $serverConfig)
+    const ROUTE_RESET=1,       ROUTE_DATA=2,       ROUTE_REQUEST=3;
+    public function start() : void
     {
-        // set the server config
-        $this->serverConfig = $serverConfig;
+        // create a new instance of the routeHandler
 
-        // Make ping object
-        $this->ping = new Ping($this);
+        $header = '';
 
-        Kernel::register($this);
-    }
-    abstract public function handleRecvPacket(string $rawData) : void;
-    abstract public function handleSendPacket(string $rawData,int $type) : void;
+        // Let the other server know we are a new instance
+        $header .= $this->pack(self::SYS_NEW_INSTANCE,$this->serverConfig->ip.':'.$this->serverConfig->port);
+        // get the routes header
+        $header .= $this->pack(self::SYS_ROUTES,$this->getRouteHeader());
 
-    protected function packCrypt(string $rawData,int $type) : string
-    {
 
-        return $this->crypt(self::ENCRYPT,$this->pack($rawData,$type));
+        // Send the data
+        $this->send(self::TYPE_SYSTEM,$header);
+
+
     }
 
-    protected function unpackDecrypt(string $rawData) : array
+    protected function parseIPv4(string $data) : void
     {
-        return $this->unpack($this->crypt(self::DECRYPT,$rawData));
-    }
+        $IPv4 = new IPv4($data);
+        $ipDst = $IPv4->getDstIP();
 
-    public function pack(string $data, int $type) : string
-    {
-        return $this->getEncapsulation()->pack($data,$type);
-    }
+        print $IPv4->getSrcIP()->getNormal().' -> '.$ipDst->getNormal().PHP_EOL;
 
-    protected function unpack(string $data) : array
-    {
-        return $this->getEncapsulation()->unpack($data);
-    }
-
-    private function getEncapsulation() : encapsulation
-    {
-        $encap = $this->serverConfig->encapsulation;
-        if (!$encap instanceof Encapsulation)   {throw new \Exception('No such Encapsulation');}
-        return $encap;
-    }
-
-    private function crypt(int $what,$data) : string
-    {
-        $encryption = $this->serverConfig->encryption;
-        if (!$encryption instanceof Encryptable){throw new \Exception('No such Encryption');}
-
-        switch ($what)
-        {
-            case self::ENCRYPT:
-                return $encryption->encrypt($data);
-            case self::DECRYPT:
-                return $encryption->decrypt($data);
+        try {
+            $macAddress =  Ethernet::getMacOfIP($ipDst);
+            $device = Ethernet::getDevOfIP($ipDst);
+        } catch (InvalidMacAddress $mac) {
+            // No mac address found, we cant route it
+            return;
         }
-        throw new \Exception('Failed on [en/de]crypt');
+
+
+        $builder = new IPv4Builder(NetworkDevice::getNetworkInterfaceByDeviceName($device),$macAddress,$data);
+        $builder->build();
+        $builder->send();
+
+
     }
+    public function parseRoute(array $msgs) : string
+    {
+        $return = '';
+        foreach ($msgs as $msg)
+        {
+            $data = $msg['data'];
+            switch ($msg['type'])
+            {
+                case self::ROUTE_RESET:
+                    $this->serverConfig->routes->resetRoutes();
+                    print 'Clearing Routes: '.$data.PHP_EOL;
+                    break;
+
+                case self::ROUTE_DATA:
+                    print 'Adding route: '.$data.PHP_EOL;
+                    $this->serverConfig->addRoute($data);
+                    break;
+                case self::ROUTE_REQUEST:
+                    print 'Requested routes';
+                    $return .= $this->getRouteHeader();
+                    break;
+            }
+        }
+        return $return;
+    }
+    public function getRouteHeader() : string
+    {
+        $return = $this->pack(self::ROUTE_RESET,'');
+        foreach (explode(',',Conf::getEnv('myroutes')) as $route)
+        {
+            $return .= $this->pack(self::ROUTE_DATA,$route);
+        }
+        return $return;
+    }
+
+
 }
+

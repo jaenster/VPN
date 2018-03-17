@@ -1,12 +1,10 @@
 <?php
 namespace VPN\Transfer;
 
+use Rawsocket\Pcap\DumpablePacket;
 use VPN\Configuration\ServerConfig;
 use VPN\Kernel\Kernel;
 use VPN\Kernel\Runnable;
-use Rawsocket\Pcap\DumpablePacket;
-use VPN\Transfer\Encapsulation\Encapsulation;
-use VPN\Transfer\Encryption\Encryptable;
 
 final class Transport implements Runnable
 {
@@ -47,11 +45,13 @@ final class Transport implements Runnable
             return; // No such server known, drop packet
         }
 
+
         // for Debug
-        //print new DumpablePacket($buf);
+        //print 'Recved from '.$remote_ip.':'.$remote_port.PHP_EOL;
+        //print new DumpablePacket($buf,'<----');
 
         // Let the protocol handle the recved msg
-        $serverConfig->protocol->handleRecvPacket($buf);
+        $serverConfig->protocol->recv($buf);
     }
     public function start() : void
     {
@@ -59,19 +59,16 @@ final class Transport implements Runnable
     }
 
 
-    public function send(string $data,ServerConfig $serverConfig)
+    public function send(string $data,ServerConfig $serverConfig) : void
     {
-
-        // Pack & Encrypt
-        // sending data
         socket_sendto($this->socket, $data , strlen($data) , 0 , $serverConfig->ip , $serverConfig->port);
 
-
         // For debug
-        //print new DumpablePacket($data);
+        //print 'Send to '.$serverConfig->ip.':'.$serverConfig->port.PHP_EOL;
+        //print new DumpablePacket($data,'---->');
 
     }
-    public function close()
+    public function close() : void
     {
         socket_close($this->socket);
     }

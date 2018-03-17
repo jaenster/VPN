@@ -3,10 +3,11 @@
 namespace VPN\Deamon\Router;
 
 
+use Rawsocket\Pcap\DumpablePacket;
 use VPN\Configuration\Conf;
 use Rawsocket\Model\Packet;
 use Rawsocket\Model\Protocol\IPv4;
-use VPN\Transfer\Protocol\Protocol;
+use VPN\Transfer\Protocol\BaseProtocol;
 
 class IPv4Router
 {
@@ -25,16 +26,14 @@ class IPv4Router
         if ($ipDst->getNormal() == $this->router->networkInterface->ip){
             return ;
         }
-
-        print $ipDst->getNormal().PHP_EOL;
         try {
             $serverConfig = $this->router->getRoutes($ipDst);
         } catch (\Exception $e) {
             // no such route
             return;
         }
-
+        //print new DumpablePacket($ipPacket->getRaw());
         // send the packet to the server
-        $serverConfig->protocol->handleSendPacket($ipPacket->getRaw(),Protocol::TYPE_IPv4);
+        $serverConfig->protocol->send(BaseProtocol::TYPE_IPv4,$ipPacket->getRaw());
     }
 }

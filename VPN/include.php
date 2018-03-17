@@ -1,4 +1,6 @@
 <?php
+require_once 'helpers.php';
+
 require_once 'Kernel/include.php';
 
 require_once 'Daemon/include.php';

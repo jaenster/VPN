@@ -30,7 +30,6 @@ class BinaryInt extends Raw
         if ($hex % 2 == 0 ){
             $hex = '0'.$hex;
         }
-        print $hex.PHP_EOL;
         return hex2bin($hex);
     }
 }
