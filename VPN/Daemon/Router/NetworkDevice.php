@@ -2,6 +2,7 @@
 
 namespace VPN\Daemon\Router;
 
+use Rawsocket\Exceptions\NotALayerInterface;
 use Rawsocket\Model\Protocol\IP;
 use Rawsocket\Pcap\DumpablePacket;
 use VPN\Deamon\Router\Router;
@@ -67,10 +68,18 @@ class NetworkDevice implements NetworkInterface,Runnable
         $ethernet = $packet->getEthernet();
 
         // not IP traffic? skip
-        if (!$ethernet->getNextLayer() instanceof IP)
+        try {
+            if (!$ethernet->getNextLayer() instanceof IP)
+            {
+                // not IP traffic
+                return ;
+            }
+        } catch (NotALayerInterface $e)
         {
+            // not IP traffic
             return ;
         }
+
 
         // Is it a broadcast, or a directed straight at us?
         if ($ethernet->getMacDst()->getRaw() === $this->macAddress->getRaw()){
