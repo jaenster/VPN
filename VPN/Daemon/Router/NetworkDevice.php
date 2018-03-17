@@ -2,6 +2,7 @@
 
 namespace VPN\Daemon\Router;
 
+use Rawsocket\Model\Protocol\IP;
 use Rawsocket\Pcap\DumpablePacket;
 use VPN\Deamon\Router\Router;
 use VPN\Kernel\Kernel;
@@ -64,7 +65,12 @@ class NetworkDevice implements NetworkInterface,Runnable
 
         $packet = new Packet($pcapPacket);
         $ethernet = $packet->getEthernet();
-        if ($ethernet->getNextLayer() instanceof IP
+
+        // not IP traffic? skip
+        if (!$ethernet->getNextLayer() instanceof IP)
+        {
+            return ;
+        }
 
         // Is it a broadcast, or a directed straight at us?
         if ($ethernet->getMacDst()->getRaw() === $this->macAddress->getRaw()){
