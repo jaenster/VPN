@@ -43,7 +43,7 @@ class NetworkDevice implements NetworkInterface,Runnable
             $this->device,
             '',
             4096,
-            1);
+            0);
     }
 
     public function start() : void
@@ -59,7 +59,9 @@ class NetworkDevice implements NetworkInterface,Runnable
         if (!$this->macAddress instanceof MacAddress){ return ; }
 
         // the simplePcap magic
+        $time = mTime();
         $pcapPacket = $this->simplePcap->get();
+        print 'Delay: '.($time-mTime()).PHP_EOL;
         if ($pcapPacket === NULL){
             return; // No packet's
         }
