@@ -34,7 +34,7 @@ class IPv4Router
         }
 
         $this->router->networkInterface->time;
-        $this->router->networkInterface->time['Kernel'] = mTime()-[0];
+        $this->router->networkInterface->time['Kernel'] = mTime()-$this->router->networkInterface->time[0];
         array_shift($this->router->networkInterface->time);
         var_dump($this->router->networkInterface->time);
 
