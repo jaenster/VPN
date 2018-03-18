@@ -44,7 +44,7 @@ class NetworkDevice implements NetworkInterface,Runnable
             $this->device,
             '',
             4096,
-            0);
+            1);
     }
 
     public function start() : void
@@ -94,7 +94,6 @@ class NetworkDevice implements NetworkInterface,Runnable
 
             // Let the kernel parse this packet
             Kernel::callMethod('parseEthernetPacket',[$ethernet]);
-            $this->time['Kernel'] = mTime()-$this->time[0];
 
         }
 

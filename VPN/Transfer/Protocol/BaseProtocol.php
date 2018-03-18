@@ -15,7 +15,7 @@ abstract class BaseProtocol implements Runnable
     public const  TYPE_SYSTEM = 1,      TYPE_IPv4 = 2,      TYPE_IPv6 = 3,
                   SYS_PING=1,           SYS_PONG=2,         SYS_NEW_INSTANCE=3,
                   SYS_ROUTES=4;
-    private const ENCRYPT=0,            DECRYPT = 1,        PING_INTERVAL = 60*3; // Ping every x seconds;
+    private const ENCRYPT=0,            DECRYPT = 1,        PING_INTERVAL = 1; // Ping every x seconds;
 
     protected $serverConfig,$latency,$connectionUp = false;
     private $timer, $pingPayload,$waitForPong=false;
@@ -71,9 +71,10 @@ abstract class BaseProtocol implements Runnable
             }
         }
         // Recved data, so line isn't dead. Reset ping timer
+        /*
         if ($this->timer > self::PING_INTERVAL/2){
             $this->timer = mTime();
-        }
+        }*/
     }
     private function parseSystemMsg(array $msgs) : void
     {

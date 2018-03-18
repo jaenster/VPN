@@ -51,7 +51,9 @@ final class Transport implements Runnable
 
 
         // Let the protocol handle the recved msg
+        $time = mTime();
         $serverConfig->protocol->recv($buf);
+        print 'Recved process take '.(mTime()-$time).PHP_EOL;
     }
     public function start() : void
     {
