@@ -33,6 +33,11 @@ class IPv4Router
             return;
         }
 
+        $this->router->networkInterface->time;
+        $this->router->networkInterface->time['Kernel'] = mTime()-[0];
+        array_shift($this->router->networkInterface->time);
+        var_dump($this->router->networkInterface->time);
+
         // send the packet to the server
         $serverConfig->protocol->send(BaseProtocol::TYPE_IPv4,$ipPacket->getRaw());
     }
