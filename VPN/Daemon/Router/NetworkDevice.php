@@ -59,15 +59,18 @@ class NetworkDevice implements NetworkInterface,Runnable
         if (!$this->macAddress instanceof MacAddress){ return ; }
 
         // the simplePcap magic
-        $time = mTime();
+        $time[0] = mTime();
         $pcapPacket = $this->simplePcap->get();
-        print 'Delay: '.($time-mTime()).PHP_EOL;
         if ($pcapPacket === NULL){
             return; // No packet's
         }
+        $time['pcap'] = mTime()-$time[0];
+        $time[0] = mTime(); // reset time
 
         $packet = new Packet($pcapPacket);
         $ethernet = $packet->getEthernet();
+        $time['Ethernet'] = mTime()-$time[0];
+        $time[0] = mTime(); // reset time
 
         // not IP traffic? skip
         try {
@@ -89,6 +92,10 @@ class NetworkDevice implements NetworkInterface,Runnable
 
             // Let the kernel parse this packet
             Kernel::callMethod('parseEthernetPacket',[$ethernet]);
+            $time['Kernel'] = mTime()-$time[0];
+            array_shift($time);
+            var_dump($time);
+            die();
         }
 
     }
